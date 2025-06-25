@@ -8,7 +8,7 @@
       "scripting"
     ],
     "host_permissions": [
-      "*://wd10.myworkday.com/ubc/d/*",
+      "*://wd10.myworkday.com/ubc/d/task/*",
       "*://*.ratemyprofessors.com/*"
     ],
     "content_scripts": [
