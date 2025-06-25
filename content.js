@@ -53,18 +53,17 @@ document.addEventListener('mouseover', async e => {
   showTooltip('Loading grades...', x, y);
 
   try {
-    const grades = await fetchGrades(null,subject, course, section);
-    console.log('RAW GRADES DATA:', grades);
-
-    const dist = grades.grades
-    const gradeText = Object.entries(dist)
-      .map(([grade, count]) => `${grade}: ${count}`)
-      .join(', ');
-      showTooltip(`Avg: ${grades.average}$ ${gradeText}`, x, y);
-      } catch {
-        showTooltip('Grades unavailable', x, y);
+    const data = await fetchGrades(null, subject, course, section);
+    console.log('RAW GRADES DATA:', data);
+    const term = `${data.year}${data.session}`;
+    showTooltip(`Term: ${term}  Avg: ${data.average}%  Median: ${data.median}%  25th: ${data.percentile_25}%  75th: ${data.percentile_75}%`, x, y);
+  } catch (e) {
+    console.error(e);
+    showTooltip('Grades unavailable', x, y);
   }
 });
+
+
 document.addEventListener('mouseout', e => {
   const el = e.target.closest(SELECTOR);
   const container = getCourseContainer();
