@@ -56,14 +56,23 @@ document.addEventListener('mouseover', async e => {
   tip.style.display = 'block';
 
   try {
-    const data = await fetchGrades(null, subject, course, section);
-    renderGradeChart(tip, data.grades, {
-      term:   `${data.year}${data.session}`,
-      course: `${subject} ${course}${section ? `-${section}` : ''}`,
-      avg:    data.average.toFixed(1),
-      median: data.median,
-      lower:  data.percentile_25,
-      upper:  data.percentile_75
+    const result = await fetchGradesWithFallback(subject, course, section);
+    
+    // Create course display name with section info
+    let courseDisplay = `${subject} ${course}`;
+    if (result.usedSection) {
+      courseDisplay += `-${result.usedSection}`;
+    } else if (section) {
+      courseDisplay += ` (Course-level data)`;
+    }
+    
+    renderGradeChart(tip, result.data.grades, {
+      term: result.usedTerm,
+      course: courseDisplay,
+      avg: result.data.average.toFixed(1),
+      median: result.data.median,
+      lower: result.data.percentile_25,
+      upper: result.data.percentile_75
     });
     const height = tip.offsetHeight;
     tip.style.top = (rect.top + window.scrollY - height - 10) + 'px';
