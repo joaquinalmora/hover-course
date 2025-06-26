@@ -56,14 +56,13 @@ document.addEventListener('mouseover', async e => {
   tip.style.display = 'block';
 
   try {
-    const result = await fetchGradesWithFallback(subject, course, section);
+    const result = await fetchWithDualFallback(subject, course, section);
     
-    // Create course display name with section info
     let courseDisplay = `${subject} ${course}`;
     if (result.usedSection) {
       courseDisplay += `-${result.usedSection}`;
-    } else if (section) {
-      courseDisplay += ` (Course-level data)`;
+    } else {
+      courseDisplay += ' (Course-level data)';
     }
     
     renderGradeChart(tip, result.data.grades, {

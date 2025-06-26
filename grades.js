@@ -1,43 +1,58 @@
 console.log(" grades.js loaded");
 
-const API_BASE_URL = 'https://ubcgrades.com/api/v3';
+const API_V3_BASE = 'https://ubcgrades.com/api/v3';
+const API_V2_BASE = 'https://ubcgrades.com/api/v2';
 const CAMPUS = 'UBCO';
 
-// Cache objects
-let termsCache = null;
-let sectionsCache = new Map(); // key: `${term}-${subject}-${course}`, value: sections array
+let v3TermsCache = null;
+let v2TermsCache = null;
+let sectionsCache = new Map();
 
-// Initialize terms cache
-async function initializeTermsCache() {
-  if (termsCache) return termsCache;
+async function fetchV3Terms() {
+  if (v3TermsCache) return v3TermsCache;
   
   try {
-    const response = await fetch(`${API_BASE_URL}/yearsessions/${CAMPUS}`);
-    if (!response.ok) throw new Error(`Failed to fetch terms: ${response.status}`);
+    const response = await fetch(`${API_V3_BASE}/yearsessions/${CAMPUS}`);
+    if (!response.ok) throw new Error(`Failed to fetch v3 terms: ${response.status}`);
     
     const terms = await response.json();
-    // Sort newest to oldest (assuming format like "2023W", "2023S")
-    termsCache = terms.sort((a, b) => b.localeCompare(a));
-    console.log('Terms cache initialized:', termsCache);
-    return termsCache;
+    v3TermsCache = terms.sort((a, b) => b.localeCompare(a));
+    console.log('V3 terms cache initialized:', v3TermsCache);
+    return v3TermsCache;
   } catch (error) {
-    console.error('Failed to initialize terms cache:', error);
-    // Fallback to a reasonable default list
-    termsCache = ['2023W', '2023S', '2022W', '2022S', '2021W', '2021S'];
-    return termsCache;
+    console.error('Failed to initialize v3 terms cache:', error);
+    v3TermsCache = ['2023W', '2023S', '2022W', '2022S', '2021W', '2021S'];
+    return v3TermsCache;
   }
 }
 
-// Get sections for a specific course and term
-async function getSections(term, subject, course) {
-  const cacheKey = `${term}-${subject}-${course}`;
+async function fetchV2Terms() {
+  if (v2TermsCache) return v2TermsCache;
+  
+  try {
+    const response = await fetch(`${API_V2_BASE}/yearsessions/${CAMPUS}`);
+    if (!response.ok) throw new Error(`Failed to fetch v2 terms: ${response.status}`);
+    
+    const terms = await response.json();
+    v2TermsCache = terms.sort((a, b) => b.localeCompare(a));
+    console.log('V2 terms cache initialized:', v2TermsCache);
+    return v2TermsCache;
+  } catch (error) {
+    console.error('Failed to initialize v2 terms cache:', error);
+    v2TermsCache = [];
+    return v2TermsCache;
+  }
+}
+
+async function getSections(apiBase, term, subject, course) {
+  const cacheKey = `${apiBase}-${term}-${subject}-${course}`;
   
   if (sectionsCache.has(cacheKey)) {
     return sectionsCache.get(cacheKey);
   }
   
   try {
-    const response = await fetch(`${API_BASE_URL}/sections/${CAMPUS}/${term}/${subject}/${course}`);
+    const response = await fetch(`${apiBase}/sections/${CAMPUS}/${term}/${subject}/${course}`);
     if (!response.ok) {
       sectionsCache.set(cacheKey, []);
       return [];
@@ -53,10 +68,9 @@ async function getSections(term, subject, course) {
   }
 }
 
-// Try to fetch grades for a specific section
-async function tryFetchGradesForSection(term, subject, course, section) {
+async function tryFetchGradesForSection(apiBase, term, subject, course, section) {
   try {
-    const url = `${API_BASE_URL}/grades/${CAMPUS}/${term}/${subject}/${course}/${section}`;
+    const url = `${apiBase}/grades/${CAMPUS}/${term}/${subject}/${course}/${section}`;
     const response = await fetch(url);
     
     if (response.ok) {
@@ -71,10 +85,9 @@ async function tryFetchGradesForSection(term, subject, course, section) {
   }
 }
 
-// Try to fetch course-level grades (fallback)
-async function tryFetchCourseGrades(term, subject, course) {
+async function tryFetchCourseGrades(apiBase, term, subject, course) {
   try {
-    const url = `${API_BASE_URL}/grades/${CAMPUS}/${term}/${subject}/${course}`;
+    const url = `${apiBase}/grades/${CAMPUS}/${term}/${subject}/${course}`;
     const response = await fetch(url);
     
     if (response.ok) {
@@ -89,62 +102,66 @@ async function tryFetchCourseGrades(term, subject, course) {
   }
 }
 
-// Main function with comprehensive fallback logic
-async function fetchGradesWithFallback(subject, course, requestedSection) {
-  // Initialize terms cache
-  const terms = await initializeTermsCache();
-  let lastTriedTerm = null;
+async function tryTermWithAPI(apiBase, term, subject, course, requestedSection) {
+  console.log(`Trying term: ${term} for ${subject} ${course} with ${apiBase}`);
   
-  // Iterate through terms newest to oldest
-  for (const term of terms) {
-    lastTriedTerm = term;
-    console.log(`Trying term: ${term} for ${subject} ${course}`);
-    
-    // Step 1: Try the requested section first if provided
-    if (requestedSection) {
-      const result = await tryFetchGradesForSection(term, subject, course, requestedSection);
-      if (result.success) {
-        console.log(`Found grades for ${subject} ${course}-${requestedSection} in ${term}`);
-        return result;
-      }
-    }
-    
-    // Step 2: Get all available sections for this term and course
-    const sections = await getSections(term, subject, course);
-    
-    // Step 3: Try each section until one succeeds
-    for (const section of sections) {
-      // Skip the requested section if we already tried it
-      if (section === requestedSection) continue;
-      
-      const result = await tryFetchGradesForSection(term, subject, course, section);
-      if (result.success) {
-        console.log(`Found grades for ${subject} ${course}-${section} in ${term}`);
-        return result;
-      }
-    }
-    
-    console.log(`No section-level data found for ${subject} ${course} in ${term}`);
-  }
-  
-  // Step 4: Final course-level fallback using the last tried term
-  if (lastTriedTerm) {
-    console.log(`Trying course-level fallback for ${subject} ${course} in ${lastTriedTerm}`);
-    const result = await tryFetchCourseGrades(lastTriedTerm, subject, course);
+  if (requestedSection) {
+    const result = await tryFetchGradesForSection(apiBase, term, subject, course, requestedSection);
     if (result.success) {
-      console.log(`Found course-level grades for ${subject} ${course} in ${lastTriedTerm}`);
+      console.log(`Found grades for ${subject} ${course}-${requestedSection} in ${term}`);
       return result;
     }
   }
   
-  // No data found anywhere
+  const sections = await getSections(apiBase, term, subject, course);
+  
+  for (const section of sections) {
+    if (section === requestedSection) continue;
+    
+    const result = await tryFetchGradesForSection(apiBase, term, subject, course, section);
+    if (result.success) {
+      console.log(`Found grades for ${subject} ${course}-${section} in ${term}`);
+      return result;
+    }
+  }
+  
+  const courseResult = await tryFetchCourseGrades(apiBase, term, subject, course);
+  if (courseResult.success) {
+    console.log(`Found course-level grades for ${subject} ${course} in ${term}`);
+    return courseResult;
+  }
+  
+  return { success: false };
+}
+
+async function fetchWithDualFallback(subject, course, requestedSection) {
+  const v3Terms = await fetchV3Terms();
+  
+  for (const term of v3Terms) {
+    const result = await tryTermWithAPI(API_V3_BASE, term, subject, course, requestedSection);
+    if (result.success) {
+      return result;
+    }
+  }
+  
+  console.log('Phase 1 (v3) complete, trying Phase 2 (v2)');
+  
+  const v2Terms = await fetchV2Terms();
+  const oldestV3Term = v3Terms[v3Terms.length - 1];
+  const filteredV2Terms = v2Terms.filter(term => term < oldestV3Term);
+  
+  for (const term of filteredV2Terms) {
+    const result = await tryTermWithAPI(API_V2_BASE, term, subject, course, requestedSection);
+    if (result.success) {
+      return result;
+    }
+  }
+  
   throw new Error(`No grades data found for ${subject} ${course} across all terms`);
 }
 
-// Legacy function for backward compatibility (updated to use new system)
 async function fetchGrades(yearsession, subject, course, section) {
-  const result = await fetchGradesWithFallback(subject, course, section);
-  // Return data in the expected format for backward compatibility
+  const result = await fetchWithDualFallback(subject, course, section);
   return {
     ...result.data,
     _usedTerm: result.usedTerm,
@@ -152,6 +169,5 @@ async function fetchGrades(yearsession, subject, course, section) {
   };
 }
 
-// Export both functions
 window.fetchGrades = fetchGrades;
-window.fetchGradesWithFallback = fetchGradesWithFallback;
+window.fetchWithDualFallback = fetchWithDualFallback;
