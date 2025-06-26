@@ -10,7 +10,10 @@
     "host_permissions": [
       "*://wd10.myworkday.com/ubc/d/task/*",
       "*://*.ratemyprofessors.com/*",
-      "https://ubcgrades.com/api/v3/*"
+      "https://ubcgrades.com/api/v3/*",
+      "https://ubcgrades.com/api/v2/*",
+      "https://ubcgrades.com/api/v3/course-statistics/teaching-team/*",
+      "https://ubcgrades.com/api/v2/course-statistics/teaching-team/*"
 
     ],
     "content_scripts": [

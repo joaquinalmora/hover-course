@@ -52,6 +52,7 @@ document.addEventListener('mouseover', async e => {
   const tip = getTooltip();
   tip.style.left = x + 'px';
   tip.style.top  = initialY + 'px';
+  tip.innerHTML = '';
   tip.textContent = 'Loading grades...';
   tip.style.display = 'block';
 
@@ -65,6 +66,8 @@ document.addEventListener('mouseover', async e => {
       courseDisplay += ' (Course-level data)';
     }
     
+    tip.innerHTML = '';
+    
     renderGradeChart(tip, result.data.grades, {
       term: result.usedTerm,
       course: courseDisplay,
@@ -73,6 +76,17 @@ document.addEventListener('mouseover', async e => {
       lower: result.data.percentile_25,
       upper: result.data.percentile_75
     });
+    
+    const instructors = await fetchInstructors(result.usedTerm, subject, course);
+    console.log('DEBUG: fetched instructors for', result.usedTerm, subject, course, instructors);
+    if (instructors && instructors.length > 0) {
+      const instructorNames = instructors.map(instructor => instructor.name || instructor.instructor_name || 'Unknown').join(', ');
+      const instructorDiv = document.createElement('div');
+      instructorDiv.style.cssText = 'margin-top:8px;font-size:11px;color:#666;border-top:1px solid #eee;padding-top:6px;';
+      instructorDiv.textContent = `Instructors: ${instructorNames}`;
+      tip.appendChild(instructorDiv);
+    }
+    
     const height = tip.offsetHeight;
     tip.style.top = (rect.top + window.scrollY - height - 10) + 'px';
     tip.style.display = 'block';

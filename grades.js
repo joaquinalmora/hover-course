@@ -7,6 +7,7 @@ const CAMPUS = 'UBCO';
 let v3TermsCache = null;
 let v2TermsCache = null;
 let sectionsCache = new Map();
+let instructorsCache = new Map();
 
 async function fetchV3Terms() {
   if (v3TermsCache) return v3TermsCache;
@@ -62,7 +63,7 @@ async function getSections(apiBase, term, subject, course) {
     sectionsCache.set(cacheKey, sections);
     return sections;
   } catch (error) {
-    console.error(`Failed to fetch sections for ${subject} ${course} in ${term}:`, error);
+    console.error(`Failed to fetch sections for ${subject} ${course} in ${term}:`, error);''
     sectionsCache.set(cacheKey, []);
     return [];
   }
@@ -169,5 +170,45 @@ async function fetchGrades(yearsession, subject, course, section) {
   };
 }
 
+async function fetchInstructors(term, subject, course) {
+  console.log('DEBUG fetchInstructors called with', term, subject, course);
+  
+  const cacheKey = `UBCO|${term}|${subject}|${course}`;
+  
+  if (instructorsCache.has(cacheKey)) {
+    return instructorsCache.get(cacheKey);
+  }
+  
+  try {
+    const url = `${API_V3_BASE}/course-statistics/teaching-team/UBCO/${subject}/${course}`;
+    console.log('DEBUG fetchInstructors fetching URL:', url);
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      instructorsCache.set(cacheKey, []);
+      return [];
+    }
+    
+    const responseData = await response.json();
+    console.log('RAW teaching-team response for', subject, course, responseData);
+    
+    const instructorsArray = responseData;
+    const filteredList = instructorsArray.filter(instructor => {
+      return instructor.yearsessions && instructor.yearsessions[term];
+    });
+    
+    console.log('FILTERED instructors for', term, subject, course, filteredList);
+    
+    instructorsCache.set(cacheKey, filteredList);
+    return filteredList;
+  } catch (error) {
+    console.error(`Failed to fetch instructors for ${subject} ${course} in ${term}:`, error);
+    instructorsCache.set(cacheKey, []);
+    return [];
+  }
+}
+
 window.fetchGrades = fetchGrades;
 window.fetchWithDualFallback = fetchWithDualFallback;
+window.fetchInstructors = fetchInstructors;
