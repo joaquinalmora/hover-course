@@ -20,6 +20,7 @@
         ],
         "js": [
           "grades.js",
+          "gradesChart.js",
           "content.js"
         ],
         "css": [

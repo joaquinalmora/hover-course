@@ -47,19 +47,33 @@ document.addEventListener('mouseover', async e => {
   const [course, section] = tokens[1].split('-');
 
   const rect = el.getBoundingClientRect();
-  const x = rect.left + window.scrollX;
-  const y = rect.bottom + window.scrollY + 5;
-
-  showTooltip('Loading grades...', x, y);
+  const x = rect.right + window.scrollX + 10;
+  const initialY = rect.top + window.scrollY - 10;
+  const tip = getTooltip();
+  tip.style.left = x + 'px';
+  tip.style.top  = initialY + 'px';
+  tip.textContent = 'Loading grades...';
+  tip.style.display = 'block';
 
   try {
     const data = await fetchGrades(null, subject, course, section);
-    console.log('RAW GRADES DATA:', data);
-    const term = `${data.year}${data.session}`;
-    showTooltip(`Term: ${term}  Avg: ${data.average}%  Median: ${data.median}%  25th: ${data.percentile_25}%  75th: ${data.percentile_75}%`, x, y);
+    renderGradeChart(tip, data.grades, {
+      term:   `${data.year}${data.session}`,
+      course: `${subject} ${course}${section ? `-${section}` : ''}`,
+      avg:    data.average.toFixed(1),
+      median: data.median,
+      lower:  data.percentile_25,
+      upper:  data.percentile_75
+    });
+    const height = tip.offsetHeight;
+    tip.style.top = (rect.top + window.scrollY - height - 10) + 'px';
+    tip.style.display = 'block';
   } catch (e) {
     console.error(e);
-    showTooltip('Grades unavailable', x, y);
+    tip.textContent = 'Grades unavailable';
+    tip.style.left = x + 'px';
+    tip.style.top  = initialY + 'px';
+    tip.style.display = 'block';
   }
 });
 
