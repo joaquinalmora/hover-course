@@ -77,13 +77,10 @@ document.addEventListener('mouseover', async e => {
       upper: result.data.percentile_75
     });
     
-    const instructors = await fetchInstructors(result.usedTerm, subject, course);
-    console.log('DEBUG: fetched instructors for', result.usedTerm, subject, course, instructors);
-    if (instructors && instructors.length > 0) {
-      const instructorNames = instructors.map(instructor => instructor.name || instructor.instructor_name || 'Unknown').join(', ');
+    if (result.data.educators) {
       const instructorDiv = document.createElement('div');
       instructorDiv.style.cssText = 'margin-top:8px;font-size:11px;color:#666;border-top:1px solid #eee;padding-top:6px;';
-      instructorDiv.textContent = `Instructors: ${instructorNames}`;
+      instructorDiv.textContent = `Instructors: ${result.data.educators}`;
       tip.appendChild(instructorDiv);
     }
     
