@@ -1,0 +1,5 @@
+.DS_Store
+.vscode/
+*.crx
+*.log
+node_modules/

@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Course Hover Info",
+    "name": "Course Hover",
     "version": "1.0",
     "description": "Show course info and professor ratings when hovering over course names.",
     "permissions": [
@@ -8,8 +8,11 @@
       "scripting"
     ],
     "host_permissions": [
-      "*://wd10.myworkday.com/ubc/d/*",
-      "*://*.ratemyprofessors.com/*"
+      "*://wd10.myworkday.com/ubc/d/task/*",
+      "*://*.ratemyprofessors.com/*",
+      "https://ubcgrades.com/api/v3/*",
+      "https://ubcgrades.com/api/v2/*"
+
     ],
     "content_scripts": [
       {
@@ -17,6 +20,8 @@
           "*://*.myworkday.com/ubc/d/*"
         ],
         "js": [
+          "grades.js",
+          "gradesChart.js",
           "content.js"
         ],
         "css": [
