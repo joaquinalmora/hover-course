@@ -8,15 +8,14 @@
     const maxCount = Math.max(...Object.values(dist));
     let html = '';
     html += '<div style="width:500px;font-size:12px;line-height:1.2;font-family:Arial,sans-serif;background:white;border:1px solid #ddd;border-radius:8px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">';
-    html += `<div style="font-weight:bold;margin-bottom:4px;color:#333;font-size:14px;text-align:center;">${course}</div>`;
-    html += `<div style="font-weight:bold;margin-bottom:6px;color:#333;font-size:12px;text-align:center;">${term}</div>`;
+    html += `<div style="font-weight:bold;margin-bottom:6px;color:#333;font-size:14px;text-align:center;">${course} (${term})</div>`;
     html += `<div style="margin-bottom:8px;color:#333;font-size:12px;text-align:center;">Avg: ${avg % 1 === 0 ? Math.round(avg) : avg}% &nbsp;&nbsp;Median: ${median}% &nbsp;&nbsp;Q1: ${lower}% &nbsp;&nbsp;Q3: ${upper}%</div>`;
     html += '<div style="margin-top:6px;">';
     gradeOrder.forEach(range=>{
       const count = dist[range]||0;
       const barPct = maxCount? (count/maxCount)*100 : 0;
       html += '<div style="display:flex;align-items:center;margin-bottom:3px;">';
-      html += `<span style="width:90px;font-weight:bold;color:#333;font-size:12px;">${letterMap[range]} (${gradeRanges[range]})</span>`;
+      html += `<span style="width:90px;font-weight:bold;color:#333;font-size:12px;text-align:center;">${letterMap[range]} (${gradeRanges[range]})</span>`;
       html += '<div style="flex:1;position:relative;height:10px;background:#f0f0f0;border-radius:5px;margin:0 8px;">';
       html += `<div style="height:100%;background:linear-gradient(135deg,#4B86DB,#2E5BBA);border-radius:5px;width:${barPct}%;transition:width 0.3s ease;"></div>`;
       html += '</div>';
