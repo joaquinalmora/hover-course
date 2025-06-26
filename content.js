@@ -103,3 +103,10 @@ document.addEventListener('mouseout', e => {
   if (!el || !container || !container.contains(el)) return;
   hideTooltip();
 });
+
+document.addEventListener('click', e => {
+  const clickedCourse = e.target.closest(SELECTOR);
+  if (clickedCourse) {
+    hideTooltip();
+  }
+});
