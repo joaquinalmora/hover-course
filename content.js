@@ -45,6 +45,7 @@ document.addEventListener('mouseover', async e => {
   if (!subjectRaw.includes('_')) return;
   const subject = subjectRaw.split('_')[0];
   const [course, section] = tokens[1].split('-');
+  if (!/^\d{3}$/.test(section)) return;
 
   const rect = el.getBoundingClientRect();
   const x = rect.right + window.scrollX + 10;
