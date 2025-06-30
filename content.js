@@ -275,8 +275,9 @@ document.addEventListener('mouseover', async e => {
         if (profData.legacyId) {
           ratingDiv.style.cursor = 'pointer';
           ratingDiv.style.textDecoration = 'underline';
+          ratingDiv.title = 'Click to view on RateMyProfessors';
           ratingDiv.onclick = () => {
-            window.open(`https://www.ratemyprofessors.com/ShowRatings.jsp?tid=${profData.legacyId}`, '_blank');
+            window.open(`https://www.ratemyprofessors.com/professor/${profData.legacyId}`, '_blank');
           };
         }
       }
