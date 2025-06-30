@@ -12,13 +12,28 @@ function getCourseContainer() {
   return courseListContainer;
 }
 let tooltip = null;
+let hideTimeout = null;
+
 function getTooltip() {
   if (!tooltip) {
     tooltip = document.createElement('div');
     tooltip.className = 'course-tooltip';
     tooltip.style.position = 'absolute';
     tooltip.style.display = 'none';
+    tooltip.style.zIndex = '10000';
     document.body.appendChild(tooltip);
+    
+    // Add mouse events to the tooltip itself to prevent hiding when hovering over it
+    tooltip.addEventListener('mouseenter', () => {
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+      }
+    });
+    
+    tooltip.addEventListener('mouseleave', () => {
+      hideTooltipWithDelay();
+    });
   }
   return tooltip;
 }
@@ -28,15 +43,43 @@ function showTooltip(text, x, y) {
   tip.style.left = x + 'px';
   tip.style.top = y + 'px';
   tip.style.display = 'block';
+  
+  // Clear any pending hide timeout
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
 }
+
 function hideTooltip() {
-  if (tooltip) tooltip.style.display = 'none';
+  if (tooltip) {
+    tooltip.style.display = 'none';
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
+  }
+}
+
+function hideTooltipWithDelay() {
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+  }
+  hideTimeout = setTimeout(() => {
+    hideTooltip();
+  }, 300); // 300ms delay before hiding
 }
 document.addEventListener('mouseover', async e => {
   const el = e.target.closest(SELECTOR);
   if (!el) return;
   const container = getCourseContainer();
   if (!container || !container.contains(el)) return;
+
+  // Clear any pending hide timeout when hovering over a course element
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
 
   const fullText = el.textContent.trim().split(' - ')[0];
   const tokens = fullText.split(' ');
@@ -72,6 +115,9 @@ document.addEventListener('mouseover', async e => {
     renderGradeChart(tip, result.data.grades, {
       term: result.usedTerm,
       course: courseDisplay,
+      subject: subject,
+      courseNumber: course,
+      section: result.usedSection,
       avg: result.data.average.toFixed(1),
       median: result.data.median,
       lower: result.data.percentile_25,
@@ -102,7 +148,12 @@ document.addEventListener('mouseout', e => {
   const el = e.target.closest(SELECTOR);
   const container = getCourseContainer();
   if (!el || !container || !container.contains(el)) return;
-  hideTooltip();
+  
+  // Only hide with delay if we're not moving to the tooltip
+  const relatedTarget = e.relatedTarget;
+  if (!relatedTarget || (!tooltip.contains(relatedTarget) && relatedTarget !== tooltip)) {
+    hideTooltipWithDelay();
+  }
 });
 
 document.addEventListener('click', e => {
