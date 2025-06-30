@@ -1,0 +1,7 @@
+{
+  "name": "hover-course",
+  "packageManager": "yarn@4.6.0",
+  "dependencies": {
+    "ratemyprofessor-api": "^1.0.1"
+  }
+}

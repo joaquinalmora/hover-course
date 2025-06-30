@@ -1,5 +1,6 @@
 const SELECTOR = 'div[data-automation-id="promptOption"]';
 const CONTAINER_PREFIX = '[id^="wd-FacetedSearchResultList-"]';
+
 let courseListContainer = null;
 function getCourseContainer() {
   if (courseListContainer && document.body.contains(courseListContainer)) return courseListContainer;
@@ -69,11 +70,83 @@ function hideTooltipWithDelay() {
     hideTooltip();
   }, 300); // 300ms delay before hiding
 }
+
+// ─── Instructor Parser Function ───
+function parseInstructorFromPrintable(html) {
+  // Use regex to find the JSON array after "label":"Instructor Teaching"
+  const instructorRegex = /"label":"Instructor Teaching"[^}]*"instances":(\[[^\]]*\])/;
+  const match = html.match(instructorRegex);
+  
+  if (!match) {
+    return 'TBA';
+  }
+  
+  // Attempt to parse the JSON array
+  try {
+    const instancesArray = JSON.parse(match[1]);
+    
+    // Extract the instructor name
+    if (instancesArray.length > 0 && instancesArray[0].text) {
+      return instancesArray[0].text;
+    } else {
+      return 'TBA';
+    }
+    
+  } catch (error) {
+    return 'TBA';
+  }
+}
+
 document.addEventListener('mouseover', async e => {
   const el = e.target.closest(SELECTOR);
   if (!el) return;
   const container = getCourseContainer();
   if (!container || !container.contains(el)) return;
+
+  // Find the wrapper with the automation ID
+  const selectedItem = el.closest('[data-automation-id^="selectedItem_"]');
+  const automationId = selectedItem?.getAttribute('data-automation-id');
+  
+  // Parse out the instanceId
+  let instanceId;
+  if (automationId) {
+    instanceId = automationId.split('_')[1];
+  } else {
+    return;
+  }
+
+  // Construct the printable URL
+  if (instanceId) {
+    const objectCode = instanceId.split('$')[0];
+    const printableUrl = `${window.location.origin}/ubc/inst/` +
+                         `1$${objectCode}/${instanceId}.htmld`;
+    
+    // Fetch printable-view HTML
+    try {
+      const response = await fetch(printableUrl, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        }
+      });
+      
+      if (response.ok) {
+        const htmlText = await response.text();
+        
+        // Parse instructor from HTML
+        const instructorName = parseInstructorFromPrintable(htmlText);
+        
+        // Log the final result
+        console.log('🎓 Instructor:', instructorName);
+      }
+      
+    } catch (error) {
+      // Silently handle errors
+    }
+    
+  }
+  // ────────────────────────────────────────────────
 
   // Clear any pending hide timeout when hovering over a course element
   if (hideTimeout) {
