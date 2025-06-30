@@ -97,6 +97,24 @@ function parseInstructorFromPrintable(html) {
   }
 }
 
+// Function to search for professor ratings
+async function searchProfessorRating(instructorName) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({
+      action: 'getProfessors',
+      name: instructorName,
+      schoolId: '5436' // UBC school ID
+    }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('❌ Runtime error:', chrome.runtime.lastError);
+        resolve({ success: false, error: 'Runtime error' });
+      } else {
+        resolve(response);
+      }
+    });
+  });
+}
+
 document.addEventListener('mouseover', async e => {
   const el = e.target.closest(SELECTOR);
   if (!el) return;
@@ -137,8 +155,41 @@ document.addEventListener('mouseover', async e => {
         // Parse instructor from HTML
         const instructorName = parseInstructorFromPrintable(htmlText);
         
-        // Log the final result
+        // Log the instructor name
         console.log('🎓 Instructor:', instructorName);
+        
+        // Search for professor rating if we have a valid instructor name
+        if (instructorName && instructorName !== 'TBA') {
+          try {
+            const professorData = await searchProfessorRating(instructorName);
+            if (professorData.success) {
+              console.log('⭐ Professor rating found:', professorData.professor);
+              
+              // Store professor data for use in tooltip
+              window.currentProfessorData = {
+                name: instructorName,
+                rating: professorData.professor.avgRating,
+                numRatings: professorData.professor.numRatings,
+                wouldTakeAgain: professorData.professor.wouldTakeAgainPercent,
+                legacyId: professorData.professor.legacyId
+              };
+            } else {
+              console.log('❌ Professor rating not found:', professorData.error);
+              window.currentProfessorData = {
+                name: instructorName,
+                error: professorData.error
+              };
+            }
+          } catch (error) {
+            console.error('❌ Error fetching professor data:', error);
+            window.currentProfessorData = {
+              name: instructorName,
+              error: 'Failed to fetch rating'
+            };
+          }
+        } else {
+          window.currentProfessorData = null;
+        }
       }
       
     } catch (error) {
@@ -197,11 +248,40 @@ document.addEventListener('mouseover', async e => {
       upper: result.data.percentile_75
     });
     
+    // Add instructor information if available
     if (result.data.educators) {
       const instructorDiv = document.createElement('div');
       instructorDiv.style.cssText = 'margin-top:8px;font-size:11px;color:#666;border-top:1px solid #eee;padding-top:6px;';
       instructorDiv.textContent = `Instructors: ${result.data.educators}`;
       tip.appendChild(instructorDiv);
+    }
+    
+    // Add professor rating information if available
+    if (window.currentProfessorData) {
+      const profData = window.currentProfessorData;
+      const ratingDiv = document.createElement('div');
+      ratingDiv.style.cssText = 'margin-top:8px;font-size:11px;color:#666;border-top:1px solid #eee;padding-top:6px;';
+      
+      if (profData.error) {
+        ratingDiv.textContent = `${profData.name}: Professor data unavailable`;
+      } else {
+        const ratingText = profData.rating ? `${profData.rating}/5` : 'N/A';
+        const numRatingsText = profData.numRatings ? ` (${profData.numRatings} ratings)` : '';
+        const wouldTakeAgainText = profData.wouldTakeAgain ? `, ${profData.wouldTakeAgain}% would take again` : '';
+        
+        ratingDiv.innerHTML = `<strong>${profData.name}</strong>: ⭐ ${ratingText}${numRatingsText}${wouldTakeAgainText}`;
+        
+        // Make it clickable if we have a legacyId
+        if (profData.legacyId) {
+          ratingDiv.style.cursor = 'pointer';
+          ratingDiv.style.textDecoration = 'underline';
+          ratingDiv.onclick = () => {
+            window.open(`https://www.ratemyprofessors.com/ShowRatings.jsp?tid=${profData.legacyId}`, '_blank');
+          };
+        }
+      }
+      
+      tip.appendChild(ratingDiv);
     }
     
     const height = tip.offsetHeight;

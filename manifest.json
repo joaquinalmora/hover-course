@@ -5,7 +5,8 @@
     "description": "Show course info and professor ratings when hovering over course names.",
     "permissions": [
       "activeTab",
-      "scripting"
+      "scripting",
+      "storage"
     ],
     "host_permissions": [
       "*://wd10.myworkday.com/ubc/d/task/*",
@@ -14,6 +15,9 @@
       "https://ubcgrades.com/api/v2/*"
 
     ],
+    "background": {
+      "service_worker": "background.js"
+    },
     "content_scripts": [
       {
         "matches": [
