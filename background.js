@@ -133,6 +133,7 @@ async function handleProfessorSearch(request, sendResponse) {
                   }
                   department
                   avgRating
+                  avgDifficulty
                   numRatings
                   wouldTakeAgainPercent
                 }

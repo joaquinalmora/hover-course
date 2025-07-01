@@ -169,6 +169,7 @@ document.addEventListener('mouseover', async e => {
               window.currentProfessorData = {
                 name: instructorName,
                 rating: professorData.professor.avgRating,
+                difficulty: professorData.professor.avgDifficulty,
                 numRatings: professorData.professor.numRatings,
                 wouldTakeAgain: professorData.professor.wouldTakeAgainPercent,
                 legacyId: professorData.professor.legacyId
@@ -188,7 +189,11 @@ document.addEventListener('mouseover', async e => {
             };
           }
         } else {
-          window.currentProfessorData = null;
+          // Handle TBA case
+          window.currentProfessorData = {
+            name: 'TBA',
+            tba: true
+          };
         }
       }
       
@@ -260,26 +265,79 @@ document.addEventListener('mouseover', async e => {
     if (window.currentProfessorData) {
       const profData = window.currentProfessorData;
       const ratingDiv = document.createElement('div');
-      ratingDiv.style.cssText = 'margin-top:8px;font-size:11px;color:#666;border-top:1px solid #eee;padding-top:6px;';
+      ratingDiv.className = 'professor-section';
       
-      if (profData.error) {
-        ratingDiv.textContent = `${profData.name}: Professor data unavailable`;
+      if (profData.tba) {
+        // Simple TBA message
+        ratingDiv.innerHTML = `
+          <div style="text-align: center; padding: 12px; font-size: 12px; color: #6b7280; font-style: italic;">
+            Instructor not yet assigned
+          </div>
+        `;
+      } else if (profData.error) {
+        // Error state
+        ratingDiv.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div>
+              <div style="font-weight: 600; color: #64748b; font-size: 14px;">${profData.name}</div>
+              <div style="font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">Professor</div>
+            </div>
+          </div>
+          <div style="text-align: center; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px;">
+            <div style="font-size: 11px; color: #856404;">Rating data unavailable</div>
+          </div>
+        `;
       } else {
+        // Success state with improved styling
         const ratingText = profData.rating ? `${profData.rating}/5` : 'N/A';
-        const numRatingsText = profData.numRatings ? ` (${profData.numRatings} ratings)` : '';
-        const wouldTakeAgainText = profData.wouldTakeAgain ? `, ${profData.wouldTakeAgain}% would take again` : '';
+        const difficultyText = profData.difficulty ? `${profData.difficulty}/5` : 'N/A';
+        const wouldTakeAgainText = profData.wouldTakeAgain ? 
+          `${profData.wouldTakeAgain % 1 === 0 ? Math.round(profData.wouldTakeAgain) : parseFloat(profData.wouldTakeAgain).toFixed(1)}%` : 'N/A';
         
-        ratingDiv.innerHTML = `<strong>${profData.name}</strong>: ⭐ ${ratingText}${numRatingsText}${wouldTakeAgainText}`;
+        // Create clickable professor name
+        const professorNameSpan = document.createElement('span');
+        professorNameSpan.textContent = profData.name;
+        professorNameSpan.className = 'professor-name';
+        professorNameSpan.title = 'Click to view on RateMyProfessors';
         
-        // Make it clickable if we have a legacyId
+        // Make only the name clickable
         if (profData.legacyId) {
-          ratingDiv.style.cursor = 'pointer';
-          ratingDiv.style.textDecoration = 'underline';
-          ratingDiv.title = 'Click to view on RateMyProfessors';
-          ratingDiv.onclick = () => {
+          professorNameSpan.onclick = (e) => {
+            e.stopPropagation();
             window.open(`https://www.ratemyprofessors.com/professor/${profData.legacyId}`, '_blank');
           };
         }
+        
+        // Build the review count text
+        const reviewCountText = profData.numRatings ? ` (${profData.numRatings} reviews)` : '';
+        
+        ratingDiv.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <div id="professor-name-container" style="font-size: 14px;"></div>
+              <span style="font-size: 10px; color: #94a3b8; font-style: italic;">${reviewCountText}</span>
+            </div>
+            <div style="font-size: 8px; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 500;">RateMyProfessors</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+            <div style="text-align: center; padding: 8px; background: white; border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+              <div style="font-size: 16px; font-weight: 800; color: #059669; margin-bottom: 1px;">${ratingText}</div>
+              <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Rating</div>
+            </div>
+            <div style="text-align: center; padding: 8px; background: white; border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+              <div style="font-size: 16px; font-weight: 800; color: #dc2626; margin-bottom: 1px;">${difficultyText}</div>
+              <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Difficulty</div>
+            </div>
+            <div style="text-align: center; padding: 8px; background: white; border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+              <div style="font-size: 16px; font-weight: 800; color: #7c3aed; margin-bottom: 1px;">${wouldTakeAgainText}</div>
+              <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Would Take Again</div>
+            </div>
+          </div>
+        `;
+        
+        // Insert the clickable name into the name container
+        const nameContainer = ratingDiv.querySelector('#professor-name-container');
+        nameContainer.appendChild(professorNameSpan);
       }
       
       tip.appendChild(ratingDiv);

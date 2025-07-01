@@ -1,5 +1,3 @@
-console.log(" grades.js loaded");
-
 const API_V3_BASE = 'https://ubcgrades.com/api/v3';
 const API_V2_BASE = 'https://ubcgrades.com/api/v2';
 const CAMPUS = 'UBCO';
@@ -17,7 +15,6 @@ async function fetchV3Terms() {
     
     const terms = await response.json();
     v3TermsCache = terms.sort((a, b) => b.localeCompare(a));
-    console.log('V3 terms cache initialized:', v3TermsCache);
     return v3TermsCache;
   } catch (error) {
     console.error('Failed to initialize v3 terms cache:', error);
@@ -35,10 +32,8 @@ async function fetchV2Terms() {
     
     const terms = await response.json();
     v2TermsCache = terms.sort((a, b) => b.localeCompare(a));
-    console.log('V2 terms cache initialized:', v2TermsCache);
     return v2TermsCache;
   } catch (error) {
-    console.error('Failed to initialize v2 terms cache:', error);
     v2TermsCache = [];
     return v2TermsCache;
   }
@@ -103,12 +98,9 @@ async function tryFetchCourseGrades(apiBase, term, subject, course) {
 }
 
 async function tryTermWithAPI(apiBase, term, subject, course, requestedSection) {
-  console.log(`Trying term: ${term} for ${subject} ${course} with ${apiBase}`);
-  
   if (requestedSection) {
     const result = await tryFetchGradesForSection(apiBase, term, subject, course, requestedSection);
     if (result.success) {
-      console.log(`Found grades for ${subject} ${course}-${requestedSection} in ${term}`);
       return result;
     }
   }
@@ -120,14 +112,12 @@ async function tryTermWithAPI(apiBase, term, subject, course, requestedSection) 
     
     const result = await tryFetchGradesForSection(apiBase, term, subject, course, section);
     if (result.success) {
-      console.log(`Found grades for ${subject} ${course}-${section} in ${term}`);
       return result;
     }
   }
   
   const courseResult = await tryFetchCourseGrades(apiBase, term, subject, course);
   if (courseResult.success) {
-    console.log(`Found course-level grades for ${subject} ${course} in ${term}`);
     return courseResult;
   }
   
@@ -143,8 +133,6 @@ async function fetchWithDualFallback(subject, course, requestedSection) {
       return result;
     }
   }
-  
-  console.log('Phase 1 (v3) complete, trying Phase 2 (v2)');
   
   const v2Terms = await fetchV2Terms();
   const oldestV3Term = v3Terms[v3Terms.length - 1];
