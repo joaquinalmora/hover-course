@@ -113,6 +113,45 @@ document.addEventListener('mouseover', async e => {
   const container = getCourseContainer();
   if (!container || !container.contains(el)) return;
 
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
+
+  const fullText = el.textContent.trim().split(' - ')[0];
+  const tokens = fullText.split(' ');
+  if (tokens.length < 2) return;
+  const subjectRaw = tokens[0];
+  if (!subjectRaw.includes('_')) return;
+  const subject = subjectRaw.split('_')[0];
+  const [course, section] = tokens[1].split('-');
+  if (!/^\d{3}$/.test(section)) return;
+
+  const rect = el.getBoundingClientRect();
+  const x = rect.right + window.scrollX + 10;
+  const initialY = rect.top + window.scrollY - 10;
+  const tip = getTooltip();
+  tip.style.left = x + 'px';
+  tip.style.top  = initialY + 'px';
+  tip.innerHTML = '';
+  
+  tip.innerHTML = `
+    <div style="width:300px;padding:20px;background:white;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:Arial,sans-serif;text-align:center;">
+      <div style="display:inline-flex;align-items:center;gap:8px;color:#666;font-size:14px;">
+        <div style="width:16px;height:16px;border:2px solid #e0e0e0;border-top:2px solid #2E5BBA;border-radius:50%;animation:spin 1s linear infinite;"></div>
+        Loading data...
+      </div>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    </div>
+  `;
+  
+  tip.style.display = 'block';
+
   const selectedItem = el.closest('[data-automation-id^="selectedItem_"]');
   const automationId = selectedItem?.getAttribute('data-automation-id');
   
@@ -178,30 +217,6 @@ document.addEventListener('mouseover', async e => {
     }
     
   }
-
-  if (hideTimeout) {
-    clearTimeout(hideTimeout);
-    hideTimeout = null;
-  }
-
-  const fullText = el.textContent.trim().split(' - ')[0];
-  const tokens = fullText.split(' ');
-  if (tokens.length < 2) return;
-  const subjectRaw = tokens[0];
-  if (!subjectRaw.includes('_')) return;
-  const subject = subjectRaw.split('_')[0];
-  const [course, section] = tokens[1].split('-');
-  if (!/^\d{3}$/.test(section)) return;
-
-  const rect = el.getBoundingClientRect();
-  const x = rect.right + window.scrollX + 10;
-  const initialY = rect.top + window.scrollY - 10;
-  const tip = getTooltip();
-  tip.style.left = x + 'px';
-  tip.style.top  = initialY + 'px';
-  tip.innerHTML = '';
-  tip.textContent = 'Loading grades...';
-  tip.style.display = 'block';
 
   try {
     const result = await fetchWithDualFallback(subject, course, section);
@@ -314,7 +329,16 @@ document.addEventListener('mouseover', async e => {
     tip.style.top = (rect.top + window.scrollY - height - 10) + 'px';
     tip.style.display = 'block';
   } catch (e) {
-    tip.textContent = 'Grades unavailable';
+    tip.innerHTML = `
+      <div style="width:300px;padding:20px;background:white;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:Arial,sans-serif;text-align:center;">
+        <div style="color:#dc2626;font-size:14px;font-weight:500;">
+          ⚠️ Grade data unavailable
+        </div>
+        <div style="color:#666;font-size:12px;margin-top:4px;">
+          No data found for this course
+        </div>
+      </div>
+    `;
     tip.style.left = x + 'px';
     tip.style.top  = initialY + 'px';
     tip.style.display = 'block';
