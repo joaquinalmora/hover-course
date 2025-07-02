@@ -1,19 +1,23 @@
 {
     "manifest_version": 3,
-    "name": "Course Hover",
-    "version": "1.0",
-    "description": "Show course info and professor ratings when hovering over course names.",
+    "name": "UBC Course Hover Info",
+    "version": "1.0.0",
+    "description": "Show grade distributions and professor ratings when hovering over courses in UBC's course registration system.",
     "permissions": [
       "activeTab",
-      "scripting"
+      "scripting",
+      "storage"
     ],
     "host_permissions": [
       "*://wd10.myworkday.com/ubc/d/task/*",
+      "*://*.myworkday.com/ubc/d/*",
       "*://*.ratemyprofessors.com/*",
       "https://ubcgrades.com/api/v3/*",
       "https://ubcgrades.com/api/v2/*"
-
     ],
+    "background": {
+      "service_worker": "background.js"
+    },
     "content_scripts": [
       {
         "matches": [
@@ -24,10 +28,13 @@
           "gradesChart.js",
           "content.js"
         ],
-        "css": [
-          "style.css"
-        ],
+        "css": ["style.css"],
         "run_at": "document_idle"
       }
-    ]
-  }
+    ],
+    "icons": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+}
