@@ -7,7 +7,6 @@
     const total = Object.values(dist).reduce((a,b)=>a+b,0);
     const maxCount = Math.max(...Object.values(dist));
     
-    // Construct UBC grades URL
     let ubcGradesUrl = '';
     if (subject && courseNumber) {
       const sectionPart = section ? `-${section}` : '';
@@ -23,7 +22,6 @@
       html += `<div style="font-weight:bold;margin-bottom:6px;color:#333;font-size:14px;text-align:center;">${course} (${term})</div>`;
     }
     
-    // Add instructor information as subtitle if available
     if (educators) {
       html += `<div style="margin-bottom:8px;color:#666;font-size:11px;text-align:center;font-style:italic;">Instructor(s): ${educators}</div>`;
     }

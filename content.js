@@ -24,7 +24,6 @@ function getTooltip() {
     tooltip.style.zIndex = '10000';
     document.body.appendChild(tooltip);
     
-    // Add mouse events to the tooltip itself to prevent hiding when hovering over it
     tooltip.addEventListener('mouseenter', () => {
       if (hideTimeout) {
         clearTimeout(hideTimeout);
@@ -45,7 +44,6 @@ function showTooltip(text, x, y) {
   tip.style.top = y + 'px';
   tip.style.display = 'block';
   
-  // Clear any pending hide timeout
   if (hideTimeout) {
     clearTimeout(hideTimeout);
     hideTimeout = null;
@@ -68,12 +66,10 @@ function hideTooltipWithDelay() {
   }
   hideTimeout = setTimeout(() => {
     hideTooltip();
-  }, 300); // 300ms delay before hiding
+  }, 300);
 }
 
-// ─── Instructor Parser Function ───
 function parseInstructorFromPrintable(html) {
-  // Use regex to find the JSON array after "label":"Instructor Teaching"
   const instructorRegex = /"label":"Instructor Teaching"[^}]*"instances":(\[[^\]]*\])/;
   const match = html.match(instructorRegex);
   
@@ -81,11 +77,9 @@ function parseInstructorFromPrintable(html) {
     return 'TBA';
   }
   
-  // Attempt to parse the JSON array
   try {
     const instancesArray = JSON.parse(match[1]);
     
-    // Extract the instructor name
     if (instancesArray.length > 0 && instancesArray[0].text) {
       return instancesArray[0].text;
     } else {
@@ -97,16 +91,14 @@ function parseInstructorFromPrintable(html) {
   }
 }
 
-// Function to search for professor ratings
 async function searchProfessorRating(instructorName) {
   return new Promise((resolve) => {
     chrome.runtime.sendMessage({
       action: 'getProfessors',
       name: instructorName,
-      schoolId: '5436' // UBC school ID
+      schoolId: '5436'
     }, (response) => {
       if (chrome.runtime.lastError) {
-        console.error('❌ Runtime error:', chrome.runtime.lastError);
         resolve({ success: false, error: 'Runtime error' });
       } else {
         resolve(response);
@@ -121,11 +113,9 @@ document.addEventListener('mouseover', async e => {
   const container = getCourseContainer();
   if (!container || !container.contains(el)) return;
 
-  // Find the wrapper with the automation ID
   const selectedItem = el.closest('[data-automation-id^="selectedItem_"]');
   const automationId = selectedItem?.getAttribute('data-automation-id');
   
-  // Parse out the instanceId
   let instanceId;
   if (automationId) {
     instanceId = automationId.split('_')[1];
@@ -133,13 +123,11 @@ document.addEventListener('mouseover', async e => {
     return;
   }
 
-  // Construct the printable URL
   if (instanceId) {
     const objectCode = instanceId.split('$')[0];
     const printableUrl = `${window.location.origin}/ubc/inst/` +
                          `1$${objectCode}/${instanceId}.htmld`;
     
-    // Fetch printable-view HTML
     try {
       const response = await fetch(printableUrl, {
         method: 'GET',
@@ -152,20 +140,12 @@ document.addEventListener('mouseover', async e => {
       if (response.ok) {
         const htmlText = await response.text();
         
-        // Parse instructor from HTML
         const instructorName = parseInstructorFromPrintable(htmlText);
         
-        // Log the instructor name
-        console.log('🎓 Instructor:', instructorName);
-        
-        // Search for professor rating if we have a valid instructor name
         if (instructorName && instructorName !== 'TBA') {
           try {
             const professorData = await searchProfessorRating(instructorName);
             if (professorData.success) {
-              console.log('⭐ Professor rating found:', professorData.professor);
-              
-              // Store professor data for use in tooltip
               window.currentProfessorData = {
                 name: instructorName,
                 rating: professorData.professor.avgRating,
@@ -175,21 +155,18 @@ document.addEventListener('mouseover', async e => {
                 legacyId: professorData.professor.legacyId
               };
             } else {
-              console.log('❌ Professor rating not found:', professorData.error);
               window.currentProfessorData = {
                 name: instructorName,
                 error: professorData.error
               };
             }
           } catch (error) {
-            console.error('❌ Error fetching professor data:', error);
             window.currentProfessorData = {
               name: instructorName,
               error: 'Failed to fetch rating'
             };
           }
         } else {
-          // Handle TBA case
           window.currentProfessorData = {
             name: 'TBA',
             tba: true
@@ -198,13 +175,10 @@ document.addEventListener('mouseover', async e => {
       }
       
     } catch (error) {
-      // Silently handle errors
     }
     
   }
-  // ────────────────────────────────────────────────
 
-  // Clear any pending hide timeout when hovering over a course element
   if (hideTimeout) {
     clearTimeout(hideTimeout);
     hideTimeout = null;
@@ -340,7 +314,6 @@ document.addEventListener('mouseover', async e => {
     tip.style.top = (rect.top + window.scrollY - height - 10) + 'px';
     tip.style.display = 'block';
   } catch (e) {
-    console.error(e);
     tip.textContent = 'Grades unavailable';
     tip.style.left = x + 'px';
     tip.style.top  = initialY + 'px';
@@ -354,7 +327,6 @@ document.addEventListener('mouseout', e => {
   const container = getCourseContainer();
   if (!el || !container || !container.contains(el)) return;
   
-  // Only hide with delay if we're not moving to the tooltip
   const relatedTarget = e.relatedTarget;
   if (!relatedTarget || (!tooltip.contains(relatedTarget) && relatedTarget !== tooltip)) {
     hideTooltipWithDelay();

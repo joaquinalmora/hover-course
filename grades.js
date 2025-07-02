@@ -17,7 +17,6 @@ async function fetchV3Terms() {
     v3TermsCache = terms.sort((a, b) => b.localeCompare(a));
     return v3TermsCache;
   } catch (error) {
-    console.error('Failed to initialize v3 terms cache:', error);
     v3TermsCache = ['2023W', '2023S', '2022W', '2022S', '2021W', '2021S'];
     return v3TermsCache;
   }
@@ -57,7 +56,6 @@ async function getSections(apiBase, term, subject, course) {
     sectionsCache.set(cacheKey, sections);
     return sections;
   } catch (error) {
-    console.error(`Failed to fetch sections for ${subject} ${course} in ${term}:`, error);''
     sectionsCache.set(cacheKey, []);
     return [];
   }
@@ -75,7 +73,6 @@ async function tryFetchGradesForSection(apiBase, term, subject, course, section)
     
     return { success: false, status: response.status };
   } catch (error) {
-    console.error(`Network error fetching grades for ${subject} ${course}-${section} in ${term}:`, error);
     return { success: false, error };
   }
 }
@@ -92,7 +89,6 @@ async function tryFetchCourseGrades(apiBase, term, subject, course) {
     
     return { success: false, status: response.status };
   } catch (error) {
-    console.error(`Network error fetching course grades for ${subject} ${course} in ${term}:`, error);
     return { success: false, error };
   }
 }
