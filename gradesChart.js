@@ -3,7 +3,7 @@
   const letterMap = {'90-100%':'A+','85-89%':'A','80-84%':'A-','76-79%':'B+','72-75%':'B','68-71%':'B-','64-67%':'C+','60-63%':'C','55-59%':'C-','50-54%':'D','<50%':'F'};
   const gradeRanges = {'90-100%':'90-100%','85-89%':'85-89%','80-84%':'80-84%','76-79%':'76-79%','72-75%':'72-75%','68-71%':'68-71%','64-67%':'64-67%','60-63%':'60-63%','55-59%':'55-59%','50-54%':'50-54%','<50%':'0-49%'};
   window.renderGradeChart = function(containerEl, dist, opts){
-    const {avg,median,lower,upper,term,course,subject,courseNumber,section} = opts;
+    const {avg,median,lower,upper,term,course,subject,courseNumber,section,educators} = opts;
     const total = Object.values(dist).reduce((a,b)=>a+b,0);
     const maxCount = Math.max(...Object.values(dist));
     
@@ -21,6 +21,11 @@
       html += `<div style="font-weight:bold;margin-bottom:6px;color:#333;font-size:14px;text-align:center;"><a href="${ubcGradesUrl}" target="_blank" style="color:#2E5BBA;text-decoration:none;border-bottom:1px dotted #2E5BBA;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${course}</a> (${term})</div>`;
     } else {
       html += `<div style="font-weight:bold;margin-bottom:6px;color:#333;font-size:14px;text-align:center;">${course} (${term})</div>`;
+    }
+    
+    // Add instructor information as subtitle if available
+    if (educators) {
+      html += `<div style="margin-bottom:8px;color:#666;font-size:11px;text-align:center;font-style:italic;">Instructor(s): ${educators}</div>`;
     }
     html += `<div style="margin-bottom:8px;color:#333;font-size:12px;text-align:center;">Avg: ${avg % 1 === 0 ? Math.round(avg) : avg}% &nbsp;&nbsp;Median: ${median}% &nbsp;&nbsp;Q1: ${lower}% &nbsp;&nbsp;Q3: ${upper}%</div>`;
     html += '<div style="margin-top:6px;">';

@@ -250,16 +250,9 @@ document.addEventListener('mouseover', async e => {
       avg: result.data.average.toFixed(1),
       median: result.data.median,
       lower: result.data.percentile_25,
-      upper: result.data.percentile_75
+      upper: result.data.percentile_75,
+      educators: result.data.educators
     });
-    
-    // Add instructor information if available
-    if (result.data.educators) {
-      const instructorDiv = document.createElement('div');
-      instructorDiv.style.cssText = 'margin-top:8px;font-size:11px;color:#666;border-top:1px solid #eee;padding-top:6px;';
-      instructorDiv.textContent = `Instructors: ${result.data.educators}`;
-      tip.appendChild(instructorDiv);
-    }
     
     // Add professor rating information if available
     if (window.currentProfessorData) {
