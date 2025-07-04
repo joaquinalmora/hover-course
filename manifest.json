@@ -2,10 +2,8 @@
     "manifest_version": 3,
     "name": "UBC Course Hover Info",
     "version": "1.0.0",
-    "description": "Show grade distributions and professor ratings when hovering over courses in UBC's course registration system.",
+    "description": "Show grade distributions and professor ratings when hovering over courses in UBC's course registration system. (UBCO only)",
     "permissions": [
-      "activeTab",
-      "scripting",
       "storage"
     ],
     "host_permissions": [
@@ -36,5 +34,7 @@
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
-    }
+    },
+    "homepage_url": "https://github.com/joaquinalmora/hover-course",
+    "privacy_policy_url": "https://github.com/joaquinalmora/hover-course/blob/main/privacy.md"
 }
