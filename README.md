@@ -131,7 +131,7 @@ The core features include:
 #### Using the Extension via Chrome Web Store
 
 1. **Install the extension:**
-    - Visit the [Chrome Web Store](INSERT_LINK_HERE).
+    - Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/fkbhngaoibjjndgcmhbffoodnmfccaab?utm_source=item-share-cb).
     - Click "Add to Chrome" to install the extension.
 
 2. **Use the extension:**
