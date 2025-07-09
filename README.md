@@ -1,13 +1,7 @@
-<div id="top">
+# UBC Course Hover Info
 
-<!-- HEADER STYLE: COMPACT -->
-<img src="readmeai/assets/logos/purple.svg" width="30%" align="left" style="margin-right: 15px">
-
-# <code>❯ REPLACE-ME</code>
-<em>Unlock Insights. Elevate Learning.</em>
-
-<!-- BADGES -->
-<!-- local repository, no metadata badges. -->
+<div align="center">
+    <img src="icons/icon.png" width="30%" style="margin-bottom: 15px">
 
 <em>Built with the tools and technologies:</em>
 
@@ -15,8 +9,7 @@
 <img src="https://img.shields.io/badge/GitHub-181717.svg?style=default&logo=GitHub&logoColor=white" alt="GitHub">
 <img src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=default&logo=JavaScript&logoColor=black" alt="JavaScript">
 <img src="https://img.shields.io/badge/CSS-663399.svg?style=default&logo=CSS&logoColor=white" alt="CSS">
-
-<br clear="left"/>
+</div>
 
 ## 📄 Table of Contents
 
@@ -24,24 +17,18 @@
 - [✨ Overview](#-overview)
 - [📌 Features](#-features)
 - [📁 Project Structure](#-project-structure)
-    - [📑 Project Index](#-project-index)
 - [🚀 Getting Started](#-getting-started)
-    - [📋 Prerequisites](#-prerequisites)
-    - [⚙ ️ Installation](#-installation)
-    - [💻 Usage](#-usage)
-    - [🧪 Testing](#-testing)
-- [📈 Roadmap](#-roadmap)
-- [🤝 Contributing](#-contributing)
+    - [Using the Extension via Chrome Web Store](#using-the-extension-via-chrome-web-store)
+    - [Using the Extension Locally](#using-the-extension-locally)
 - [📜 License](#-license)
-- [✨ Acknowledgments](#-acknowledgments)
 
 ---
 
 ## ✨ Overview
 
-Unlock the power of data visualization and insights with [TOOL NAME], a developer tool designed to streamline course information and professor ratings for UBC students.
+Unlock the power of data visualization and insights with [UBC Course Hover Info, a developer tool designed to streamline course information and professor ratings for UBC students.
 
-**Why [TOOL NAME]?**
+**Why UBC Course Hover Info?**
 
 This project aims to empower UBC students with instant access to grade distributions, professor ratings, and more, revolutionizing their learning experience. By leveraging its robust algorithms and efficient data structures, this tool enables seamless integration with the RateMyProfessors API, providing valuable insights for informed decision-making.
 
@@ -56,18 +43,12 @@ The core features include:
 
 ## 📌 Features
 
-|      | Component       | Details                              |
-| :--- | :-------------- | :----------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>The project uses a microservices architecture, with each service responsible for a specific business capability.</li><li>Services communicate with each other using RESTful APIs and message queues.</li></ul> |
-| 🔩 | **Code Quality**  | <ul><li>The codebase follows the SOLID principles, ensuring that each component is loosely coupled and easy to maintain.</li><li>Code reviews are enforced through GitHub's Code Owner feature, ensuring high-quality code is merged into the main branch.</li></ul> |
-| 📄 | **Documentation** | <ul><li>The project uses Javadoc-style comments for API documentation, making it easy for developers to understand how to use each service.</li><li>A comprehensive README file provides an overview of the project's architecture and usage guidelines.</li></ul> |
-| 🔌 | **Integrations**  | <ul><li>The project integrates with GitHub using its REST API to manage issues, pull requests, and code reviews.</li><li>It also uses a message queue (Apache Kafka) for asynchronous communication between services.</li></ul> |
-| 🧩 | **Modularity**    | <ul><li>The project is divided into multiple modules, each responsible for a specific business capability. This allows for independent development and deployment of individual modules.</li><li>Each module has its own package.json file, making it easy to manage dependencies and versions.</li></ul> |
-| 🧪 | **Testing**       | <ul><li>The project uses Jest for unit testing and Cypress for end-to-end testing. Tests are run using GitHub Actions for continuous integration and deployment.</li><li>A comprehensive test suite ensures that each service is thoroughly tested before being deployed to production.</li></ul> |
-| ⚡️  | **Performance**   | <ul><li>The project uses a load balancer (NGINX) to distribute incoming traffic across multiple instances of each service, ensuring high availability and scalability.</li><li>Caching mechanisms are used to reduce the load on services and improve response times.</li></ul> |
-| 🛡️ | **Security**      | <ul><li>The project uses HTTPS encryption for all communication between services and clients.</li><li>A Web Application Firewall (WAF) is configured to detect and prevent common web attacks.</li></ul> |
-| 📦 | **Dependencies**  | <ul><li>The project depends on several open-source libraries, including Express.js for the API layer and Mongoose for database interactions.</li><li>A package manager (npm) is used to manage dependencies and versions.</li></ul> |
-| 🚀 | **Scalability**   | <ul><li>The project uses a cloud-based infrastructure (AWS) that allows for easy scaling of services based on demand.</li><li>A load balancer and auto-scaling features ensure that the system can handle increased traffic without downtime.</li></ul> |
+| Feature       | Description                              |
+| :------------ | :-------------------------------------- |
+| **Grade Visualization** | Displays grade distributions for UBC courses, including averages, medians, and quartiles. |
+| **Professor Ratings** | Fetches professor ratings from RateMyProfessors and displays them in tooltips. |
+| **Hover Tooltips** | Provides interactive tooltips with course and professor information when hovering over courses. |
+| **Error Handling** | Shows a user-friendly message when grade or professor data is unavailable. |
 
 ---
 
@@ -75,19 +56,22 @@ The core features include:
 
 ```sh
 └── /
-    ├── GitHub
-    ├── README.md
+    ├── demo/
+    │   ├── demo.mov
+    │   ├── Screenshot.png
+    ├── icons/
+    │   ├── icon.png
+    │   ├── icon16.png
+    │   ├── icon48.png
+    │   ├── icon128.png
     ├── background.js
     ├── content.js
     ├── grades.js
     ├── gradesChart.js
-    ├── icons
-    │   ├── icon128.png
-    │   ├── icon16.png
-    │   └── icon48.png
+    ├── LICENSE
     ├── manifest.json
-    ├── readme-ai.md
-    └── style.css
+    ├── README.md
+    ├── style.css
 ```
 
 ### 📑 Project Index
@@ -144,113 +128,45 @@ The core features include:
 
 ## 🚀 Getting Started
 
-### 📋 Prerequisites
+#### Using the Extension via Chrome Web Store
 
-This project requires the following dependencies:
+1. **Install the extension:**
+    - Visit the [Chrome Web Store](INSERT_LINK_HERE).
+    - Click "Add to Chrome" to install the extension.
 
-- **Programming Language:** JavaScript
+2. **Use the extension:**
+    - Navigate to UBC's course registration system.
+    - Hover over courses to view grade distributions and professor ratings.
 
-### ⚙️ Installation
-
-Build  from the source and intsall dependencies:
+#### Using the Extension Locally
 
 1. **Clone the repository:**
-
+    - Open a terminal and run:
     ```sh
-    ❯ git clone ../
+    git clone https://github.com/joaquinalmora/hover-course.git
     ```
 
 2. **Navigate to the project directory:**
-
     ```sh
-    ❯ cd 
+    cd hover-course
     ```
 
-3. **Install the dependencies:**
+3. **Load the extension in Chrome:**
+    - Open Chrome and navigate to `chrome://extensions`.
+    - Enable "Developer mode".
+    - Click "Load unpacked" and select the project directory.
 
-echo 'INSERT-INSTALL-COMMAND-HERE'
-
-### 💻 Usage
-
-Run the project with:
-
-echo 'INSERT-RUN-COMMAND-HERE'
-
-### 🧪 Testing
-
- uses the {__test_framework__} test framework. Run the test suite with:
-
-echo 'INSERT-TEST-COMMAND-HERE'
-
----
-
-## 📈 Roadmap
-
-- [X] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
-
----
-
-## 🤝 Contributing
-
-- **💬 [Join the Discussions](https://LOCAL///discussions)**: Share your insights, provide feedback, or ask questions.
-- **🐛 [Report Issues](https://LOCAL///issues)**: Submit bugs found or log feature requests for the `` project.
-- **💡 [Submit Pull Requests](https://LOCAL///blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
-
-<details closed>
-<summary>Contributing Guidelines</summary>
-
-1. **Fork the Repository**: Start by forking the project repository to your LOCAL account.
-2. **Clone Locally**: Clone the forked repository to your local machine using a git client.
-   ```sh
-   git clone .
-   ```
-3. **Create a New Branch**: Always work on a new branch, giving it a descriptive name.
-   ```sh
-   git checkout -b new-feature-x
-   ```
-4. **Make Your Changes**: Develop and test your changes locally.
-5. **Commit Your Changes**: Commit with a clear message describing your updates.
-   ```sh
-   git commit -m 'Implemented new feature x.'
-   ```
-6. **Push to LOCAL**: Push the changes to your forked repository.
-   ```sh
-   git push origin new-feature-x
-   ```
-7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
-8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
-</details>
-
-<details closed>
-<summary>Contributor Graph</summary>
-<br>
-<p align="left">
-   <a href="https://LOCAL{///}graphs/contributors">
-      <img src="https://contrib.rocks/image?repo=/">
-   </a>
-</p>
-</details>
+4. **Use the extension:**
+    - Navigate to UBC's course registration system.
+    - Hover over courses to view grade distributions and professor ratings.
 
 ---
 
 ## 📜 License
 
- is protected under the [LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
+This project is licensed under the [MIT License](LICENSE). For more details, refer to the LICENSE file.
 
 ---
-
-## ✨ Acknowledgments
-
-- Credit `contributors`, `inspiration`, `references`, etc.
-
-<div align="right">
-
-[![][back-to-top]](#top)
-
-</div>
-
 
 [back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square
 
