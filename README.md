@@ -1,7 +1,7 @@
 # UBC Course Hover Info
 
 <div align="center">
-    <img src="/Users/joaquinalmora/Desktop/hover-course/icons/icon.png" width="30%" style="margin-bottom: 15px">
+    <img src="icons/icon.png" width="30%" style="margin-bottom: 15px">
 
 <em>Built with the tools and technologies:</em>
 
@@ -26,9 +26,9 @@
 
 ## ✨ Overview
 
-Unlock the power of data visualization and insights with [TOOL NAME], a developer tool designed to streamline course information and professor ratings for UBC students.
+Unlock the power of data visualization and insights with [UBC Course Hover Info, a developer tool designed to streamline course information and professor ratings for UBC students.
 
-**Why [TOOL NAME]?**
+**Why UBC Course Hover Info?**
 
 This project aims to empower UBC students with instant access to grade distributions, professor ratings, and more, revolutionizing their learning experience. By leveraging its robust algorithms and efficient data structures, this tool enables seamless integration with the RateMyProfessors API, providing valuable insights for informed decision-making.
 
