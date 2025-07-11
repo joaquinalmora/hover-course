@@ -1,7 +1,6 @@
 let UBC_RMP_SCHOOL_ID = "U2Nob29sLTU0MzY=";
 
 
-// Function to lookup UBC school ID from RateMyProfessors
 async function lookupUBCSchoolID() {
   try {
     const response = await fetch('https://www.ratemyprofessors.com/graphql', {

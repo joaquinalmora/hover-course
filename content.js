@@ -243,21 +243,18 @@ document.addEventListener('mouseover', async e => {
       educators: result.data.educators
     });
     
-    // Add professor rating information if available
     if (window.currentProfessorData) {
       const profData = window.currentProfessorData;
       const ratingDiv = document.createElement('div');
       ratingDiv.className = 'professor-section';
       
       if (profData.tba) {
-        // Simple TBA message
         ratingDiv.innerHTML = `
           <div style="text-align: center; padding: 12px; font-size: 12px; color: #6b7280; font-style: italic;">
             Instructor not yet assigned
           </div>
         `;
       } else if (profData.error) {
-        // Error state
         ratingDiv.innerHTML = `
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
             <div>
@@ -270,19 +267,21 @@ document.addEventListener('mouseover', async e => {
           </div>
         `;
       } else {
-        // Success state with improved styling
         const ratingText = profData.rating ? `${profData.rating}/5` : 'N/A';
         const difficultyText = profData.difficulty ? `${profData.difficulty}/5` : 'N/A';
         const wouldTakeAgainText = profData.wouldTakeAgain ? 
           `${profData.wouldTakeAgain % 1 === 0 ? Math.round(profData.wouldTakeAgain) : parseFloat(profData.wouldTakeAgain).toFixed(1)}%` : 'N/A';
         
-        // Create clickable professor name
+        const ratingColor = profData.rating ? getColorGradient(profData.rating, 1, 5, false) : '#6b7280';
+        const difficultyColor = profData.difficulty ? getColorGradient(profData.difficulty, 1, 5, true) : '#6b7280';
+        const wouldTakeAgainColor = profData.wouldTakeAgain ? getColorGradient(profData.wouldTakeAgain, 0, 100, false) : '#6b7280';
+        
+        
         const professorNameSpan = document.createElement('span');
         professorNameSpan.textContent = profData.name;
         professorNameSpan.className = 'professor-name';
         professorNameSpan.title = 'Click to view on RateMyProfessors';
         
-        // Make only the name clickable
         if (profData.legacyId) {
           professorNameSpan.onclick = (e) => {
             e.stopPropagation();
@@ -290,7 +289,7 @@ document.addEventListener('mouseover', async e => {
           };
         }
         
-        // Build the review count text
+        
         const reviewCountText = profData.numRatings ? ` (${profData.numRatings} reviews)` : '';
         
         ratingDiv.innerHTML = `
@@ -303,21 +302,20 @@ document.addEventListener('mouseover', async e => {
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
             <div style="text-align: center; padding: 8px; background: white; border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-              <div style="font-size: 16px; font-weight: 800; color: #059669; margin-bottom: 1px;">${ratingText}</div>
+              <div style="font-size: 16px; font-weight: 800; color: ${ratingColor}; margin-bottom: 1px;">${ratingText}</div>
               <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Rating</div>
             </div>
             <div style="text-align: center; padding: 8px; background: white; border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-              <div style="font-size: 16px; font-weight: 800; color: #dc2626; margin-bottom: 1px;">${difficultyText}</div>
+              <div style="font-size: 16px; font-weight: 800; color: ${difficultyColor}; margin-bottom: 1px;">${difficultyText}</div>
               <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Difficulty</div>
             </div>
             <div style="text-align: center; padding: 8px; background: white; border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-              <div style="font-size: 16px; font-weight: 800; color: #7c3aed; margin-bottom: 1px;">${wouldTakeAgainText}</div>
+              <div style="font-size: 16px; font-weight: 800; color: ${wouldTakeAgainColor}; margin-bottom: 1px;">${wouldTakeAgainText}</div>
               <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Would Take Again</div>
             </div>
           </div>
         `;
         
-        // Insert the clickable name into the name container
         const nameContainer = ratingDiv.querySelector('#professor-name-container');
         nameContainer.appendChild(professorNameSpan);
       }
@@ -363,3 +361,38 @@ document.addEventListener('click', e => {
     hideTooltip();
   }
 });
+
+function getColorGradient(value, min, max, isReversed = false) {
+  const clampedValue = Math.max(min, Math.min(max, value));
+  const normalizedValue = (clampedValue - min) / (max - min);
+  
+  const adjustedValue = isReversed ? 1 - normalizedValue : normalizedValue;
+  
+  let r, g, b;
+
+  
+  if (adjustedValue <= 0.25) {
+    const t = adjustedValue / 0.25; 
+    r = Math.round(180 + (220 - 180) * t); 
+    g = Math.round(10 + (100 - 10) * t); 
+    b = Math.round(10 + (25 - 10) * t); 
+  } else if (adjustedValue <= 0.5) {
+
+    const t = (adjustedValue - 0.25) / 0.25; 
+    r = Math.round(220 + (255 - 220) * t); 
+    g = Math.round(100 + (193 - 100) * t); 
+    b = Math.round(25 + (38 - 25) * t); 
+  } else if (adjustedValue <= 0.75) {
+    const t = (adjustedValue - 0.5) / 0.25;
+    r = Math.round(255 - (155 - 34) * t); 
+  g = Math.round(193 + (197 - 193) * t); 
+    b = Math.round(38 + (71 - 38) * t); 
+  } else {
+    const t = (adjustedValue - 0.75) / 0.25; 
+    r = Math.round(100 - (100 - 21) * t); 
+    g = Math.round(197 - (197 - 128) * t); 
+    b = Math.round(71 + (53 - 71) * t); 
+  }
+  
+  return `rgb(${r}, ${g}, ${b})`;
+}
