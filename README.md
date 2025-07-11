@@ -1,5 +1,6 @@
 <div align="center">
-	# UBC Course Hover Info
+	
+# UBC Course Hover Info
 </div>
 
 <div align="center">
