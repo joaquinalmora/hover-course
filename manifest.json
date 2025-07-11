@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "UBC Course Hover Info",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Show grade distributions and professor ratings when hovering over courses in UBC's course registration system. (UBCO only)",
     "permissions": [
       "storage"
