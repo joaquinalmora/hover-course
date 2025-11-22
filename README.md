@@ -14,20 +14,20 @@
 <img src="https://img.shields.io/badge/CSS-663399.svg?style=default&logo=CSS&logoColor=white" alt="CSS">
 </div>
 
-## 📄 Table of Contents
+## Table of Contents
 
-- [📄 Table of Contents](#-table-of-contents)
-- [✨ Overview](#-overview)
-- [📌 Features](#-features)
-- [📁 Project Structure](#-project-structure)
-- [🚀 Getting Started](#-getting-started)
+- [Table of Contents](#-table-of-contents)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
     - [Using the Extension via Chrome Web Store](#using-the-extension-via-chrome-web-store)
     - [Using the Extension Locally](#using-the-extension-locally)
-- [📜 License](#-license)
+- [License](#-license)
 
 ---
 
-## ✨ Overview
+## Overview
 
 Unlock the power of data visualization and insights with [UBC Course Hover Info, a developer tool designed to streamline course information and professor ratings for UBC students.
 
@@ -37,14 +37,14 @@ This project aims to empower UBC students with instant access to grade distribut
 
 The core features include:
 
-- **🔒 Secure Data Retrieval:** Fetches grades data from two APIs (V2 and V3) with dual fallback, ensuring successful data retrieval.
-- **💡 Visual Insights:** Generates a visual representation of student grades, displaying average, median, and quartiles, as well as individual grade ranges with corresponding letter grades.
-- **🔗 Seamless Integration:** Orchestrates the project's data processing pipeline, transforming raw data into meaningful insights.
-- **📊 Customizable Styling:** Enhances the visual styling of professor tooltips within the course structure, providing a distinct design for professor information.
+- **Secure Data Retrieval:** Fetches grades data from two APIs (V2 and V3) with dual fallback, ensuring successful data retrieval.
+- **Visual Insights:** Generates a visual representation of student grades, displaying average, median, and quartiles, as well as individual grade ranges with corresponding letter grades.
+- **Seamless Integration:** Orchestrates the project's data processing pipeline, transforming raw data into meaningful insights.
+- **Customizable Styling:** Enhances the visual styling of professor tooltips within the course structure, providing a distinct design for professor information.
 
 ---
 
-## 📌 Features
+## Features
 
 | Feature       | Description                              |
 | :------------ | :-------------------------------------- |
@@ -77,7 +77,7 @@ The core features include:
     ├── style.css
 ```
 
-### 📑 Project Index
+### Project Index
 
 <details open>
 	<summary><b><code>/</code></b></summary>
@@ -129,7 +129,7 @@ The core features include:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 #### Using the Extension via Chrome Web Store
 
@@ -165,7 +165,7 @@ The core features include:
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the [MIT License](LICENSE). For more details, refer to the LICENSE file.
 
